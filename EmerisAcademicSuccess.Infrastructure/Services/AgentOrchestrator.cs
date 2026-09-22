@@ -9,6 +9,7 @@ public sealed class AgentOrchestrator(
     IEnumerable<IAgentTool> tools,
     IReminderService reminderService,
     IDocumentRepository documentRepository,
+    IConversationRepository conversationRepository,
     IRagService ragService,
     IGenerativeAiService generativeAiService,
     ISystemClock clock,
@@ -20,6 +21,9 @@ public sealed class AgentOrchestrator(
 
     public async Task<AgentResponse> ExecuteAsync(AgentRequest request, CancellationToken cancellationToken)
     {
+        await conversationRepository.EnsureConversationAsync(request.ConversationId, request.Message, cancellationToken);
+        await conversationRepository.AddMessageAsync(request.ConversationId, "user", request.Message, cancellationToken);
+
         var activeApiKey = string.IsNullOrWhiteSpace(request.ApiKeyOverride) ? _options.ApiKey : request.ApiKeyOverride;
         var currentLocalTime = clock.LocalNow;
         var promptContext = await BuildPromptContextAsync(request.Message, currentLocalTime, cancellationToken);
@@ -58,6 +62,7 @@ public sealed class AgentOrchestrator(
             : null;
 
         finalResponse ??= BuildFallbackResponse(responseContext);
+        await conversationRepository.AddMessageAsync(request.ConversationId, "assistant", finalResponse, cancellationToken);
 
         return new AgentResponse(finalResponse, plan.Reasoning, actions, ragResult.Matches, ragResult.SearchMode);
     }

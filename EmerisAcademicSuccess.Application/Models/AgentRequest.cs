@@ -2,4 +2,5 @@ namespace EmerisAcademicSuccess.Application.Models;
 
 public sealed record AgentRequest(
     string Message,
-    string? ApiKeyOverride);
+    string? ApiKeyOverride,
+    Guid ConversationId);

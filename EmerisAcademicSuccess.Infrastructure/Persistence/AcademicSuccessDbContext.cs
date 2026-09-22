@@ -9,6 +9,8 @@ public sealed class AcademicSuccessDbContext(DbContextOptions<AcademicSuccessDbC
     public DbSet<DocumentChunk> DocumentChunks => Set<DocumentChunk>();
     public DbSet<ScheduleEntry> ScheduleEntries => Set<ScheduleEntry>();
     public DbSet<Reminder> Reminders => Set<Reminder>();
+    public DbSet<Conversation> Conversations => Set<Conversation>();
+    public DbSet<ConversationMessage> ConversationMessages => Set<ConversationMessage>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -31,6 +33,22 @@ public sealed class AcademicSuccessDbContext(DbContextOptions<AcademicSuccessDbC
         modelBuilder.Entity<DocumentChunk>(entity =>
         {
             entity.Property(item => item.Content).HasMaxLength(4000);
+        });
+
+        modelBuilder.Entity<Conversation>(entity =>
+        {
+            entity.Property(item => item.Title).HasMaxLength(200);
+            entity.HasMany(item => item.Messages)
+                .WithOne(item => item.Conversation)
+                .HasForeignKey(item => item.ConversationId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<ConversationMessage>(entity =>
+        {
+            entity.Property(item => item.Role).HasMaxLength(32);
+            entity.Property(item => item.Content).HasMaxLength(8000);
+            entity.HasIndex(item => new { item.ConversationId, item.CreatedAtUtc });
         });
 
         modelBuilder.Entity<ScheduleEntry>(entity =>

@@ -9,6 +9,9 @@ public static class DatabaseInitializationExtensions
     {
         await using var scope = services.CreateAsyncScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<AcademicSuccessDbContext>();
-        await dbContext.Database.EnsureCreatedAsync();
+        if (dbContext.Database.IsInMemory())
+        {
+            await dbContext.Database.EnsureCreatedAsync();
+        }
     }
 }

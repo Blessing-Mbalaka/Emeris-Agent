@@ -16,11 +16,19 @@ public static class ServiceCollectionExtensions
     {
         services.Configure<GeminiOptions>(configuration.GetSection(GeminiOptions.SectionName));
 
+        var sqlServerConnection = configuration.GetConnectionString("SqlServer");
         var postgresConnection = configuration.GetConnectionString("Postgres");
         var provider = configuration["Persistence:Provider"] ?? "InMemory";
 
         services.AddDbContext<AcademicSuccessDbContext>(options =>
         {
+            if (string.Equals(provider, "SqlServer", StringComparison.OrdinalIgnoreCase)
+                && !string.IsNullOrWhiteSpace(sqlServerConnection))
+            {
+                options.UseSqlServer(sqlServerConnection);
+                return;
+            }
+
             if (string.Equals(provider, "Postgres", StringComparison.OrdinalIgnoreCase)
                 && !string.IsNullOrWhiteSpace(postgresConnection))
             {
@@ -33,6 +41,7 @@ public static class ServiceCollectionExtensions
 
         services.AddHttpClient<IGenerativeAiService, GeminiRestService>();
         services.AddScoped<IDocumentRepository, DocumentRepository>();
+        services.AddScoped<IConversationRepository, ConversationRepository>();
         services.AddScoped<IReminderRepository, ReminderRepository>();
         services.AddScoped<ISystemClock, SystemClock>();
         services.AddScoped<IPdfTextExtractor, PdfPigTextExtractor>();
