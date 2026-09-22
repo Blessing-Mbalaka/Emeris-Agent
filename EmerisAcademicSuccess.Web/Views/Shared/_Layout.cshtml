@@ -1,0 +1,45 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Emeris Student Agent</title>
+    <script type="importmap"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="~/css/app.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/EmerisAcademicSuccess.Web.styles.css" asp-append-version="true" />
+</head>
+<body class="min-h-screen bg-[linear-gradient(180deg,_#fffaf3_0%,_#eef7ff_52%,_#f8fafc_100%)] font-body text-slate-800 antialiased">
+    <div class="mx-auto min-h-screen max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+        <header class="mb-8 rounded-[1.5rem] border border-white/70 bg-white/70 px-5 py-4 shadow-lg shadow-slate-200/40 backdrop-blur md:px-6">
+            <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                <a asp-area="" asp-controller="Home" asp-action="Index" class="flex items-center gap-3">
+                    <span class="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-slate-950 font-display text-lg font-bold text-white">EA</span>
+                    <span>
+                        <span class="block font-display text-lg font-bold text-slate-950">Emeris Student Agent</span>
+                        <span class="block text-sm text-slate-500">Reason, plan, act, and search your academic docs</span>
+                    </span>
+                </a>
+                <nav class="flex flex-wrap gap-2 text-sm font-medium text-slate-600">
+                    <a href="#agent" class="rounded-full px-4 py-2 transition hover:bg-slate-100 hover:text-slate-950">Agent</a>
+                    <a href="#uploads" class="rounded-full px-4 py-2 transition hover:bg-slate-100 hover:text-slate-950">Uploads</a>
+                    <a href="#reminders" class="rounded-full px-4 py-2 transition hover:bg-slate-100 hover:text-slate-950">Reminders</a>
+                    <a href="#schedule" class="rounded-full px-4 py-2 transition hover:bg-slate-100 hover:text-slate-950">Schedule</a>
+                </nav>
+            </div>
+        </header>
+
+        <main role="main" class="pb-8">
+            @RenderBody()
+        </main>
+        <footer class="border-t border-slate-200 px-2 pt-6 text-sm text-slate-500">
+            Built for the Emeris Pretoria Campus qualifier with ASP.NET Core MVC, Tailwind CSS, Gemini integration, PDF extraction, and RAG-ready study support.
+        </footer>
+    </div>
+
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

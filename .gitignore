@@ -1,0 +1,24 @@
+# Build output
+bin/
+obj/
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.rsuser
+*.sln.docstates
+
+# VS Code
+.vscode/
+
+# Node
+node_modules/
+npm-debug.log*
+
+# Local app data
+EmerisAcademicSuccess.Web/App_Data/
+
+# OS files
+.DS_Store
+Thumbs.db

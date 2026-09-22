@@ -1,0 +1,28 @@
+@import "tailwindcss";
+
+@source "../Views/**/*.cshtml";
+@source "../wwwroot/js/**/*.js";
+
+@theme {
+  --font-display: "Space Grotesk", sans-serif;
+  --font-body: "Source Sans 3", sans-serif;
+  --color-brand-ink: #0f172a;
+  --color-brand-sand: #fff7ed;
+  --color-brand-sky: #ecfeff;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    min-height: 100vh;
+  }
+}
+
+@layer components {
+  .glass-card {
+    @apply rounded-[1.75rem] border border-white/60 bg-white/70 backdrop-blur;
+  }
+}

@@ -1,0 +1,230 @@
+﻿@model EmerisAcademicSuccess.Web.Models.DashboardViewModel
+@using EmerisAcademicSuccess.Domain.Entities
+@{
+    ViewData["Title"] = "Student Agent";
+}
+
+<section class="relative overflow-hidden rounded-[2rem] border border-white/60 bg-white/85 px-6 py-8 shadow-[0_30px_80px_rgba(15,23,42,0.08)] backdrop-blur xl:px-10">
+    <div class="absolute inset-y-0 right-0 hidden w-1/2 bg-[radial-gradient(circle_at_top,_rgba(249,115,22,0.18),_transparent_55%),radial-gradient(circle_at_bottom,_rgba(14,165,233,0.16),_transparent_50%)] lg:block"></div>
+    <div class="relative grid gap-8 lg:grid-cols-[1.4fr_0.8fr]">
+        <div class="space-y-6">
+            <div class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-semibold uppercase tracking-[0.25em] text-slate-500">
+                Emeris Academic Success Agent
+            </div>
+            <div class="space-y-4">
+                <h1 class="max-w-3xl font-display text-4xl leading-tight text-slate-950 md:text-6xl">
+                    Modular MVC agent for reminders, timetable extraction, and study-guide RAG.
+                </h1>
+                <p class="max-w-2xl text-base leading-8 text-slate-600 md:text-lg">
+                    Upload PDFs converted from Word tables, extract timetable and assessment rows, search study guides with RAG, and let Gemini drive tool-based planning.
+                </p>
+            </div>
+            <div class="flex flex-wrap gap-3 text-sm text-slate-600">
+                <span class="rounded-full bg-slate-950 px-4 py-2 font-medium text-white">ASP.NET Core MVC</span>
+                <span class="rounded-full bg-amber-100 px-4 py-2 font-medium text-amber-900">Tailwind CSS</span>
+                <span class="rounded-full bg-sky-100 px-4 py-2 font-medium text-sky-900">Gemini-ready</span>
+                <span class="rounded-full bg-emerald-100 px-4 py-2 font-medium text-emerald-900">Tool-based agent</span>
+            </div>
+        </div>
+        <aside class="relative rounded-[1.5rem] border border-slate-200 bg-slate-950 p-6 text-slate-50 shadow-2xl shadow-slate-950/20">
+            <p class="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">Runtime status</p>
+            <dl class="mt-6 space-y-4 text-sm">
+                <div class="flex items-center justify-between gap-4 border-b border-white/10 pb-4">
+                    <dt class="text-slate-400">Gemini key</dt>
+                    <dd class="font-semibold @(Model.GeminiApiKeyAvailable ? "text-emerald-300" : "text-amber-300")">@(Model.GeminiApiKeyAvailable ? "Ready" : "Missing")</dd>
+                </div>
+                <div class="flex items-center justify-between gap-4 border-b border-white/10 pb-4">
+                    <dt class="text-slate-400">Key source</dt>
+                    <dd class="font-semibold text-white">@Model.GeminiApiKeySource</dd>
+                </div>
+                <div class="flex items-center justify-between gap-4 border-b border-white/10 pb-4">
+                    <dt class="text-slate-400">Persistence</dt>
+                    <dd class="font-semibold text-white">@Model.PersistenceMode</dd>
+                </div>
+                <div class="flex items-center justify-between gap-4">
+                    <dt class="text-slate-400">Indexed docs</dt>
+                    <dd class="font-semibold text-white">@Model.UploadedDocuments.Count</dd>
+                </div>
+            </dl>
+            <p class="mt-6 text-sm leading-7 text-slate-300">
+                Tip: leave the app on <span class="font-semibold text-white">InMemory</span> for quick demos, or switch to <span class="font-semibold text-white">Postgres</span> in configuration for persistent hackathon storage.
+            </p>
+        </aside>
+    </div>
+</section>
+
+@if (!string.IsNullOrWhiteSpace(Model.StatusMessage))
+{
+    <section class="mt-6 rounded-2xl border border-emerald-200 bg-emerald-50 px-5 py-4 text-sm font-medium text-emerald-900">
+        @Model.StatusMessage
+    </section>
+}
+
+<section class="mt-8 grid gap-6 xl:grid-cols-[1.25fr_0.75fr]">
+    <div class="space-y-6">
+        <article id="agent" class="rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-lg shadow-slate-200/60">
+            <div class="flex items-center justify-between gap-4">
+                <div>
+                    <p class="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">Agent console</p>
+                    <h2 class="mt-2 font-display text-2xl text-slate-950">Ask for a study plan, reminder, or document answer</h2>
+                </div>
+                <span class="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700">Tools + RAG</span>
+            </div>
+            <form id="agent-form" class="mt-6 space-y-4">
+                <label class="block">
+                    <span class="mb-2 block text-sm font-medium text-slate-700">Prompt</span>
+                    <textarea id="agent-message" rows="5" class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-950 focus:bg-white" placeholder="Example: Build me a study plan for next week's assessments and remind me the night before each deadline."></textarea>
+                </label>
+                <div class="flex flex-wrap items-center gap-3">
+                    <button id="agent-submit" type="submit" class="inline-flex items-center rounded-full bg-slate-950 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800">Run agent</button>
+                    <span class="text-sm text-slate-500">The agent can use current date, reminders, schedule overview, and document search tools.</span>
+                </div>
+            </form>
+            <div id="agent-result" class="mt-6 rounded-[1.5rem] border border-dashed border-slate-300 bg-slate-50 p-5 text-sm leading-7 text-slate-600">
+                Upload your PDFs, add your Gemini key, then ask the agent to plan, reason, and act.
+            </div>
+        </article>
+
+        <article id="uploads" class="rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-lg shadow-slate-200/60">
+            <div class="flex items-center justify-between gap-4">
+                <div>
+                    <p class="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">PDF ingestion</p>
+                    <h2 class="mt-2 font-display text-2xl text-slate-950">Upload timetable, assessment schedule, and study guides</h2>
+                </div>
+                <span class="rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-900">PDF only</span>
+            </div>
+            <form asp-controller="Documents" asp-action="Upload" method="post" enctype="multipart/form-data" class="mt-6 grid gap-4 md:grid-cols-[1fr_220px_auto]">
+                <label class="block">
+                    <span class="mb-2 block text-sm font-medium text-slate-700">PDF document</span>
+                    <input name="File" type="file" accept="application/pdf" class="block w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 file:mr-4 file:rounded-full file:border-0 file:bg-slate-950 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white" />
+                </label>
+                <label class="block">
+                    <span class="mb-2 block text-sm font-medium text-slate-700">Document type</span>
+                    <select name="Category" class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none focus:border-slate-950 focus:bg-white">
+                        <option value="Timetable">Timetable</option>
+                        <option value="AssessmentSchedule">Assessment Schedule</option>
+                        <option value="StudyGuide">Study Guide</option>
+                    </select>
+                </label>
+                <div class="flex items-end">
+                    <button type="submit" class="w-full rounded-full bg-amber-500 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-amber-400">Upload and index</button>
+                </div>
+            </form>
+
+            <div class="mt-6 grid gap-4 lg:grid-cols-2">
+                @if (Model.UploadedDocuments.Count == 0)
+                {
+                    <div class="rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-5 text-sm text-slate-500 lg:col-span-2">No PDFs uploaded yet.</div>
+                }
+                else
+                {
+                    @foreach (var document in Model.UploadedDocuments)
+                    {
+                        <article class="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+                            <div class="flex items-start justify-between gap-4">
+                                <div>
+                                    <h3 class="font-semibold text-slate-900">@document.FileName</h3>
+                                    <p class="mt-1 text-xs uppercase tracking-[0.2em] text-slate-500">@document.Category • @document.UploadedAtUtc.ToLocalTime().ToString("dd MMM yyyy HH:mm")</p>
+                                </div>
+                                <span class="rounded-full bg-white px-3 py-1 text-xs font-semibold text-slate-700">@document.ScheduleEntries.Count rows</span>
+                            </div>
+                            <p class="mt-4 text-sm leading-7 text-slate-600">@document.Summary</p>
+                        </article>
+                    }
+                }
+            </div>
+        </article>
+    </div>
+
+    <div class="space-y-6">
+        <article id="settings" class="rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-lg shadow-slate-200/60">
+            <p class="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">Gemini setup</p>
+            <h2 class="mt-2 font-display text-2xl text-slate-950">Add your Gemini API key</h2>
+            <p class="mt-3 text-sm leading-7 text-slate-600">Paste the key once for this browser session, or leave the field blank to clear the session override and fall back to configuration.</p>
+            <form asp-controller="Settings" asp-action="SaveGeminiKey" method="post" class="mt-5 space-y-4">
+                <label class="block">
+                    <span class="mb-2 block text-sm font-medium text-slate-700">Gemini API key</span>
+                    <input name="ApiKey" type="password" autocomplete="off" class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none focus:border-slate-950 focus:bg-white" placeholder="AIza..." />
+                </label>
+                <button type="submit" class="rounded-full bg-sky-500 px-5 py-3 text-sm font-semibold text-white transition hover:bg-sky-400">Save session key</button>
+            </form>
+        </article>
+
+        <article id="reminders" class="rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-lg shadow-slate-200/60">
+            <p class="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">Reminders</p>
+            <h2 class="mt-2 font-display text-2xl text-slate-950">Create manual reminders</h2>
+            <form asp-controller="Reminders" asp-action="Create" method="post" class="mt-5 space-y-4">
+                <label class="block">
+                    <span class="mb-2 block text-sm font-medium text-slate-700">Title</span>
+                    <input name="Title" class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none focus:border-slate-950 focus:bg-white" placeholder="Submit networking assignment" />
+                </label>
+                <label class="block">
+                    <span class="mb-2 block text-sm font-medium text-slate-700">Due date and time</span>
+                    <input name="DueAtLocal" type="datetime-local" class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none focus:border-slate-950 focus:bg-white" />
+                </label>
+                <label class="block">
+                    <span class="mb-2 block text-sm font-medium text-slate-700">Notes</span>
+                    <textarea name="Notes" rows="3" class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none focus:border-slate-950 focus:bg-white" placeholder="Optional context for the reminder"></textarea>
+                </label>
+                <button type="submit" class="rounded-full bg-emerald-500 px-5 py-3 text-sm font-semibold text-white transition hover:bg-emerald-400">Create reminder</button>
+            </form>
+
+            <div class="mt-6 space-y-3">
+                @if (Model.UpcomingReminders.Count == 0)
+                {
+                    <div class="rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-4 text-sm text-slate-500">No reminders yet.</div>
+                }
+                else
+                {
+                    @foreach (var reminder in Model.UpcomingReminders)
+                    {
+                        <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                            <div class="flex items-center justify-between gap-4">
+                                <h3 class="font-semibold text-slate-900">@reminder.Title</h3>
+                                <span class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">@reminder.DueAtLocal.ToString("dd MMM HH:mm")</span>
+                            </div>
+                            @if (!string.IsNullOrWhiteSpace(reminder.Notes))
+                            {
+                                <p class="mt-2 text-sm leading-6 text-slate-600">@reminder.Notes</p>
+                            }
+                        </div>
+                    }
+                }
+            </div>
+        </article>
+
+        <article id="schedule" class="rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-lg shadow-slate-200/60">
+            <p class="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">Extracted schedule</p>
+            <h2 class="mt-2 font-display text-2xl text-slate-950">Timetable and assessment rows</h2>
+            <div class="mt-5 space-y-3">
+                @if (Model.ScheduleEntries.Count == 0)
+                {
+                    <div class="rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-4 text-sm text-slate-500">Upload a timetable or assessment PDF to populate this panel.</div>
+                }
+                else
+                {
+                    @foreach (var entry in Model.ScheduleEntries)
+                    {
+                        var when = entry.OccursOn is not null
+                            ? entry.OccursOn.Value.ToString("dd MMM yyyy")
+                            : entry.DayOfWeek?.ToString() ?? "TBA";
+                        var time = entry.StartTime is not null ? entry.StartTime.Value.ToString("HH:mm") : string.Empty;
+                        <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                            <div class="flex items-start justify-between gap-4">
+                                <div>
+                                    <h3 class="font-semibold text-slate-900">@entry.Title</h3>
+                                    <p class="mt-1 text-sm text-slate-600">@when @time</p>
+                                </div>
+                                <span class="rounded-full bg-white px-3 py-1 text-xs font-semibold text-slate-700">@entry.EntryType</span>
+                            </div>
+                            @if (!string.IsNullOrWhiteSpace(entry.ModuleCode) || !string.IsNullOrWhiteSpace(entry.Venue))
+                            {
+                                <p class="mt-2 text-xs uppercase tracking-[0.2em] text-slate-500">@entry.ModuleCode @entry.Venue</p>
+                            }
+                        </div>
+                    }
+                }
+            </div>
+        </article>
+    </div>
+</section>

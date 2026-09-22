@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="EmerisAcademicSuccess.Application/EmerisAcademicSuccess.Application.csproj" />
+  <Project Path="EmerisAcademicSuccess.Domain/EmerisAcademicSuccess.Domain.csproj" />
+  <Project Path="EmerisAcademicSuccess.Infrastructure/EmerisAcademicSuccess.Infrastructure.csproj" />
+  <Project Path="EmerisAcademicSuccess.Tests/EmerisAcademicSuccess.Tests.csproj" />
+  <Project Path="EmerisAcademicSuccess.Web/EmerisAcademicSuccess.Web.csproj" />
+</Solution>
