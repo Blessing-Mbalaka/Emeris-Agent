@@ -134,3 +134,7 @@ dotnet run --project .\EmerisAcademicSuccess.Web
 - The current PDF extraction expects PDF uploads.
 - Table extraction is heuristic-based, which is practical for converted Word tables but not guaranteed for every layout.
 - When no Gemini key is available, the app falls back to heuristic planning and keyword search.
+
+
+[Screenshot1](https://github.com/Blessing-Mbalaka/Emeris-Agent/blob/main/Screenshot%202026-09-22%20183703.png)
+
