@@ -1,3 +1,11 @@
+
+### Table: Sample Emeris Agent Application Outputs
+
+| Sample | Screenshot | Description |
+|---|---|---|
+| **Image 1** | <img src="https://raw.githubusercontent.com/Blessing-Mbalaka/Emeris-Agent/main/Screenshot%202026-09-22%20184719.png" width="500"> | The Emeris Agent generates a response to a user's request for a study plan and requests additional academic information to create a more specific plan. |
+| **Image 2** | <img src="https://raw.githubusercontent.com/Blessing-Mbalaka/Emeris-Agent/main/Screenshot%202026-09-22%20183703.png" width="500"> | The agent retrieves module and lecturer information from an uploaded academic document using document search/RAG. |
+
 # Emeris Academic Success Agent
 
 ASP.NET Core MVC student-support agent for the Emeris Pretoria Campus qualifier. The app is structured with clean architecture layers and includes:
@@ -134,7 +142,3 @@ dotnet run --project .\EmerisAcademicSuccess.Web
 - The current PDF extraction expects PDF uploads.
 - Table extraction is heuristic-based, which is practical for converted Word tables but not guaranteed for every layout.
 - When no Gemini key is available, the app falls back to heuristic planning and keyword search.
-
-
-[Screenshot1](https://github.com/Blessing-Mbalaka/Emeris-Agent/blob/main/Screenshot%202026-09-22%20183703.png)
-
